@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Interactive PDF Viewer</title>
+        <!-- PDF.js library from CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+        <style>
+            /* Global styles */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #ffffff;
+                margin: 0;
+                padding: 0;
+                color: rgba(46, 183, 133, 1);
+                display: flex;
+                justify-content: center;
+                position: relative;
+                min-height: 100vh;
+                flex-direction: column;
+            }
+
+            /* Main container */
+            .container {
+                margin: 0;
+                padding: 20px;
+                text-align: center;
+                position: relative;
+                z-index: 1;
+                flex: 1;
+                padding-bottom: 220px; /* Adding space at the bottom to avoid overlap with the images */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* Header styling */
+            header {
+                background-color: rgba(16, 98, 251, 1);
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                color: white;
+                width: 100%;
+            }
+
+            header h1 {
+                margin: 0;
+                font-size: 1.8em;
+            }
+
+            /* PDF viewer container */
+            .pdf-container {
+                background-color: rgba(46, 183, 133, 0.1);
+                border: 2px solid rgba(16, 98, 251, 0.3);
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 100px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 800px;
+                display: flex;
+                justify-content: center;
+            }
+
+            /* Canvas styling */
+            #pdf-viewer {
+                width: 100%;
+                border: 1px solid rgba(16, 98, 251, 0.3);
+                border-radius: 8px;
+                min-height: 500px;
+                object-fit: contain;
+            }
+
+            /* PDF file list */
+            #file-list {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            .file-link {
+                cursor: pointer;
+                color: rgba(255, 196, 32, 1);
+                text-decoration: none;
+                font-weight: bold;
+                margin: 0 10px;
+                padding: 10px 15px;
+                border-radius: 6px;
+                display: inline-block;
+                transition: background-color 0.3s ease;
+                font-size: 25px;
+            }
+
+            .file-link:hover {
+                background-color: rgba(255, 196, 32, 0.1);
+                color: rgba(16, 98, 251, 1);
+            }
+
+            /* Additional styling for page */
+            .page-background {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: -1;
+                opacity: 0.1;
+            }
+
+            /* Image placeholders at the bottom of the page */
+            .image-container {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                z-index: 0;
+                padding: 20px;
+                background-color: rgba(46, 183, 133, 0.1);
+                border-top: 2px solid rgba(16, 98, 251, 0.3);
+                width: 100%;
+            }
+
+            .image-placeholder {
+                width: 30%;
+                height: 200px;
+                background-color: rgba(16, 98, 251, 0.1);
+                border: 2px solid rgba(46, 183, 133, 0.3);
+                border-radius: 8px;
+                overflow: hidden;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .image-placeholder img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain; /* Ensures images scale down and maintain aspect ratio */
+            }
+
+            /* Styling for the logo container */
+            .logo-container {
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 15px;
+            }
+
+            .logo {
+                max-height: 50px; /* Adjust the size as needed */
+                width: auto; /* Maintain aspect ratio */
+            }
+
+            /* Adjust header text alignment */
+            header {
+                background-color: rgba(16, 98, 251, 1);
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: left; /* Align text to the left */
+            }
+
+            header h1 {
+                margin: 0;
+                font-size: 1.8em;
+                padding-left: 10px; /* Adjust padding to add space between logo and title */
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="container">
+            <!-- Header -->
+            <header>
+                <div class="logo-container">
+                    <!-- Add your company logo image here -->
+                    <img src="image1.png" alt="Company Logo" class="logo">
+                </div>
+                <h1>Welcome to K15t's Anniversary Party</h1>
+                <div class="logo-container">
+                    <!-- Add your company logo image here -->
+                    <img src="image3.png" alt="Company Logo" class="logo">
+                </div>
+            </header>
+
+            <!-- PDF File List -->
+            <div id="file-list">
+                <h1 style="color: rgba(46, 183, 133, 1);">Useful Information</h1>
+                <span class="file-link" onclick="loadPDF('Function_Sheet_Official_Supporter.pdf')">Functional Sheet</span>
+                <span class="file-link" onclick="loadPDF('Aufbau_K15T.pdf')">Aufbau K15t</span>
+                <span class="file-link" onclick="loadPDF('K15t_15_Years_Anniversary_Allergenliste_print.pdf')">Allergen List</span>
+                <span class="file-link" onclick="loadPDF('Overview_Wagenhallen_Event.pdf')">Wagenhallen Venue Overview</span>
+                <span class="file-link" onclick="loadPDF('Sign_Datenschutz_DE.pdf')">Datenschutz</span>
+                <span class="file-link" onclick="loadPDF('Sign_Datenschutz_ENG.pdf')">Data protection</span>
+            </div>
+
+            <!-- PDF Viewer Container -->
+            <div>
+                <h3>Click on one of the files in the list above to view it</h3>
+            </div>
+            <div class="pdf-container">
+                <canvas id="pdf-viewer"></canvas>
+            </div>
+
+
+        </div>
+
+        <!-- Image Placeholders at the Bottom -->
+        <div class="image-container">
+            <div class="image-placeholder" id="image1">
+                <!-- Image 1 will go here -->
+            </div>
+            <div class="image-placeholder" id="image2">
+                <!-- Image 2 will go here -->
+            </div>
+            <div class="image-placeholder" id="image3">
+                <!-- Image 3 will go here -->
+            </div>
+        </div>
+
+        <script>
+            const pdfViewer = document.getElementById('pdf-viewer');
+            let pdfDoc = null;
+            let pageNum = 1;
+
+            // Function to load and render a PDF
+            function loadPDF(url) {
+                pdfjsLib.getDocument(url).promise.then(pdf => {
+                    pdfDoc = pdf;
+                    pageNum = 1;  // Reset to the first page
+                    renderPage(pageNum);
+                });
+            }
+
+            // Function to render a specific page
+            function renderPage(num) {
+                pdfDoc.getPage(num).then(page => {
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const context = pdfViewer.getContext('2d');
+                    pdfViewer.height = viewport.height;
+                    pdfViewer.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    page.render(renderContext);
+                });
+            }
+
+            // Example images added to placeholders (you can change these URLs)
+            document.getElementById('image1').innerHTML = '<img src="image2.png" alt="Image 1">';
+            document.getElementById('image2').innerHTML = '<img src="image1.png" alt="Image 2">';
+            document.getElementById('image3').innerHTML = '<img src="image3.png" alt="Image 3">';
+        </script>
+
+    </body>
+</html>
